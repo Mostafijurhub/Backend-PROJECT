@@ -9,16 +9,16 @@ export class CartController {
 
   @Post('add')
   async addProductsToCart(@Body() products: { productId: number; quantity: number }[], @Req() req: any) {
-    console.log('User in Request:', req.user); // Debug log
-    const userId = req.user.id; // Ensure `id` exists in `req.user`
+    console.log('User in Request:', req.user); 
+    const userId = req.user.id; 
     const response = await this.cartService.addProductsToCart(userId, products);
     return response;
   }
   @Get('show')
   async showCart(@Req() req: any) {
-    console.log('User in Request:', req.user);  // Log the user object
-    const userId = req.user.id;  // Ensure `id` exists in `req.user`
-    console.log('User ID from Request:', userId);  // Log the userId separately
+    console.log('User in Request:', req.user);  
+    const userId = req.user.id;  
+    console.log('User ID from Request:', userId); 
     const response = await this.cartService.showCart(userId);
     return response;
   }
@@ -27,8 +27,8 @@ export class CartController {
 
   @Delete('remove/:productId')
   async removeProductFromCart(@Param('productId') productId: number, @Req() req: any) {
-    console.log('User in Request:', req.user); // Debug log
-    const userId = req.user.id; // Ensure `id` exists in `req.user`
+    console.log('User in Request:', req.user); 
+    const userId = req.user.id; 
     const response = await this.cartService.removeProductFromCart(userId, productId);
     return response;
   }

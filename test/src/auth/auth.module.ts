@@ -11,12 +11,12 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: 'yourSecretKey', // Update with a proper secret
+      secret: 'yourSecretKey', 
       signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, UserService,JwtStrategy],
-  exports: [AuthService],  // Export if used outside
+  exports: [AuthService],  
 })
 export class AuthModule {}

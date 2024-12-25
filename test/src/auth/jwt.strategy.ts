@@ -9,12 +9,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: 'yourSecretKey', // Use a secure secret or environment variable
+      secretOrKey: 'yourSecretKey', 
     });
   }
 
   async validate(payload: JwtPayload) {
-    // Validate the user from the payload (usually user ID or email)
+    
     return { userId: payload.sub, email: payload.email };
   }
 }
