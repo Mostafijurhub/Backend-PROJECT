@@ -1,18 +1,7 @@
-import { IsInt, IsPositive, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsInt, Min } from 'class-validator';
 
 export class AddToCartDto {
   @IsInt()
-  @IsPositive()
-  productId: number;
-
-  @IsInt()
-  @IsPositive()
+  @Min(1)
   quantity: number;
-}
-
-export class AddMultipleToCartDto {
-  @ValidateNested({ each: true })
-  @Type(() => AddToCartDto)
-  items: AddToCartDto[];
 }

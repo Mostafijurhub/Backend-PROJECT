@@ -1,53 +1,35 @@
-import { Controller, Post, Body, Param, Delete, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards, Delete, Req } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { AddToCartDto } from './cart.dto'; 
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('cart')
+@UseGuards(AuthGuard('jwt')) 
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Post('add/:productId')
-  async addToCart(
-    @Param('productId') productId: number,
-    @Body('quantity') quantity: number = 1,
-  ) {
-    const cartItem = await this.cartService.addOrUpdateProduct(productId, quantity);
-    return {
-      message: 'Product added to cart successfully',
-      cartItem: {
-        id: cartItem.id,
-        product: cartItem.product.name,
-        quantity: cartItem.quantity,
-        totalPrice: cartItem.totalPrice,
-      },
-    };
+  @Post('add')
+  async addProductsToCart(@Body() products: { productId: number; quantity: number }[], @Req() req: any) {
+    console.log('User in Request:', req.user); // Debug log
+    const userId = req.user.id; // Ensure `id` exists in `req.user`
+    const response = await this.cartService.addProductsToCart(userId, products);
+    return response;
   }
-
+  @Get('show')
+  async showCart(@Req() req: any) {
+    console.log('User in Request:', req.user);  // Log the user object
+    const userId = req.user.id;  // Ensure `id` exists in `req.user`
+    console.log('User ID from Request:', userId);  // Log the userId separately
+    const response = await this.cartService.showCart(userId);
+    return response;
+  }
   
-  @Get()
-  async getCartItems() {
-    const { items, totalPrice } = await this.cartService.getCartItems();
-    return {
-      items: items.map(item => ({
-        id: item.id,
-        product: item.product.name,
-        quantity: item.quantity,
-        totalPrice: item.totalPrice,
-      })),
-      totalCartPrice: totalPrice,
-    };
-  }
-
+  
 
   @Delete('remove/:productId')
-  async removeProduct(@Param('productId') productId: number) {
-    await this.cartService.removeProduct(productId);
-    return { message: 'Product removed from the cart successfully' };
-  }
-
-  @Delete('clear')
-  async clearCart() {
-    await this.cartService.clearCart();
-    return { message: 'Cart cleared successfully' };
+  async removeProductFromCart(@Param('productId') productId: number, @Req() req: any) {
+    console.log('User in Request:', req.user); // Debug log
+    const userId = req.user.id; // Ensure `id` exists in `req.user`
+    const response = await this.cartService.removeProductFromCart(userId, productId);
+    return response;
   }
 }

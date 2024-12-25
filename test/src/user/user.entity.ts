@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Cart } from '../cart/cart.entity';
 
 @Entity()
 export class User {
@@ -10,6 +11,7 @@ export class User {
 
   @Column()
   password: string;
-    name: any;
-    reviews: any;
+
+  @OneToMany(() => Cart, cart => cart.user) // Relates to the user property in the Cart entity
+  carts: Cart[]; // List of carts associated with this user
 }

@@ -9,6 +9,9 @@ import { Cart } from './cart/cart.entity';
 import { PaymentModule } from './payment/payment.module';
 import { Order } from './payment/order.entity';
 import { ReviewModule } from './review/review.module';
+import { Review } from './review/review.entity';
+import { Customer } from './review/customer.entity';
+import { CartItem } from './cart/cartitem.entity';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { ReviewModule } from './review/review.module';
       username: 'postgres',
       password: 'Bipul', 
       database: 'New',
-      entities: [User, Product, Cart, Order], 
+      entities: [User, Product, Cart, Order,Review,Customer,CartItem], 
       synchronize: true, 
     }),
     UserModule,

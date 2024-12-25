@@ -1,41 +1,61 @@
-import { Injectable } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';  
-import { UserService } from '../user/user.service';  
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDTO } from '../user/user.dto';
-import { FastifyReply } from 'fastify';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  
-  async createToken(user: any): Promise<string> {
-    const payload = { email: user.email, sub: user.id };
-    const secretKey = 'your-secret-key'; 
-    return jwt.sign(payload, secretKey, { expiresIn: '7d' }); 
-  }
+  async register(createUserDTO: CreateUserDTO) {
+    const { email, password } = createUserDTO;
 
-  
-  async register(createUserDTO: CreateUserDTO, res: FastifyReply) {
-    const user = await this.userService.createUser(createUserDTO); 
-    const token = await this.createToken(user); 
+    // Check if the email is already in use
+    const existingUser = await this.userService.findByEmail(email);
+    if (existingUser) {
+      throw new ConflictException('Email is already in use');
+    }
 
-    res.setCookie('token', token, {
-      httpOnly: true,  
-      secure: false,   
-      maxAge: 1000 * 60 * 60 * 24 * 7  
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the new user
+    const newUser = await this.userService.createUser({
+      email,
+      password: hashedPassword,
     });
 
-    return res.status(201).send({ user, message: 'User registered successfully' });
+    return {
+      message: 'User registered successfully',
+      user: { email: newUser.email },
+    };
   }
 
-  
-  async verifyToken(token: string): Promise<any> {
-    const secretKey = 'your-secret-key';  
-    try {
-      return jwt.verify(token, secretKey); 
-    } catch (e) {
-      throw new Error('Invalid token'); 
+  async login(createUserDTO: CreateUserDTO) {
+    const { email, password } = createUserDTO;
+
+    // Find user by email
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
     }
+
+    // Verify the password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Generate JWT token
+    const token = this.jwtService.sign({ sub: user.id, email: user.email });
+
+    return {
+      message: 'Login successful',
+      token,
+    };
   }
 }
