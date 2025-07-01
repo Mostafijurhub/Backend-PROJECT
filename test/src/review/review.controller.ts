@@ -3,7 +3,7 @@ import { ReviewService } from './review.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('reviews')
-@UseGuards(AuthGuard('jwt'))  
+
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 

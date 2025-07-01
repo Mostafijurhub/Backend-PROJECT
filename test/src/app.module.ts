@@ -21,7 +21,7 @@ import { CartItem } from './cart/cartitem.entity';
       port: 5432,
       username: 'postgres',
       password: 'Bipul', 
-      database: 'New',
+      database: 'pro',
       entities: [User, Product, Cart, Order,Review,Customer,CartItem], 
       synchronize: true, 
     }),

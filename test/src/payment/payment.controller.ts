@@ -8,9 +8,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 
 
-
 @Controller('payment')
-@UseGuards(AuthGuard('jwt')) 
+
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
   
